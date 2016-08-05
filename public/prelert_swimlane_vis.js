@@ -17,18 +17,21 @@
  *                                                                          *
  ****************************************************************************
  */
+import 'plugins/prelert_swimlane_vis/prelert_swimlane_vis.less';
+import 'plugins/prelert_swimlane_vis/prelert_swimlane_vis_controller.js'
+import TemplateVisTypeTemplateVisTypeProvider from 'ui/template_vis_type/template_vis_type';
+import swimlineVisTemplate from 'plugins/prelert_swimlane_vis/prelert_swimlane_vis.html';
+import VisSchemasProvider from 'ui/vis/schemas';
+import swimlineVisParamsTemplate from 'plugins/prelert_swimlane_vis/prelert_swimlane_vis_params.html';
 
 define(function(require) {
-
-  require('plugins/prelert_swimlane_vis/prelert_swimlane_vis_controller.js');
-  require('plugins/prelert_swimlane_vis/prelert_swimlane_vis.less');
 
   // Register the PrelertSwimlaneVisProvider with the visualization registry.
   require('ui/registry/vis_types').register(PrelertSwimlaneVisProvider);
 
   function PrelertSwimlaneVisProvider(Private) {
-    var TemplateVisType = Private(require('ui/template_vis_type/TemplateVisType'));
-    var Schemas = Private(require('ui/Vis/Schemas'));
+    var TemplateVisType = Private(TemplateVisTypeTemplateVisTypeProvider);
+    var Schemas = Private(VisSchemasProvider);
 
     // Return a new instance describing this visualization.
     return new TemplateVisType({
@@ -38,12 +41,13 @@ define(function(require) {
       description : 'Swimlane visualization displaying the behavior of a metric ' +
                     'over time across a field from the results.' +
                     'Each lane displays a different value of the field, with the ' +
-                    'relative size of the metric over each interval indicated ' +
-                    'by the color of the symbol at that time. ' +
-                    'Created by Prelert for Behavioral Analytics www.prelert.com',
-      template : require('plugins/prelert_swimlane_vis/prelert_swimlane_vis.html'),
+                    'color of each symbol either based on the relative size of the metric ' +
+                    'over each interval indicated or by a discrete value. ' +
+                    'Created by Prelert for Behavioral Analytics www.prelert.com.  Adapted by' +
+                    'Elasticsearch for Training Demonstration.',
+      template : swimlineVisTemplate,
       params : {
-        editor : require('plugins/prelert_swimlane_vis/prelert_swimlane_vis_params.html'),
+        editor : swimlineVisParamsTemplate,
         defaults : {
           interval : { display : 'Auto', val : 'auto' },
           lowThreshold: 0,
@@ -78,14 +82,15 @@ define(function(require) {
         min : 0,
         max : 1,
         aggFilter : 'terms'
-      }, {
-        group : 'buckets',
-        name : 'timeSplit',
-        icon : 'fa fa-th',
-        title : 'Time field',
-        min : 1,
-        max : 1,
-        aggFilter : 'date_histogram'
+      },
+      {
+      group : 'buckets',
+      name : 'timeSplit',
+      icon : 'fa fa-th',
+      title : 'Time field',
+      min : 1,
+      max : 1,
+      aggFilter : 'date_histogram'
       } ])
     });
   }
